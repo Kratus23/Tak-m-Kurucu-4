@@ -1,7 +1,7 @@
 {
   "name": "Takım Kurucu",
   "short_name": "TakımKur",
-  "start_url": "/index.html",
+  "start_url": "/takimkurucu11/",
   "display": "standalone",
   "background_color": "#f0f4f8",
   "theme_color": "#007bff",
