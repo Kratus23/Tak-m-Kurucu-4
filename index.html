@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Takım Kurucu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="manifest" href="manifest.json">
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("service-worker.js");
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f4f8;
+      text-align: center;
+      padding: 20px;
+    }
+    textarea, select {
+      width: 90%;
+      margin-bottom: 10px;
+      font-size: 16px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    button {
+      margin: 5px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .team {
+      margin-top: 20px;
+      padding: 10px;
+      border-radius: 10px;
+      width: 90%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    ul { list-style: none; padding: 0; }
+    li { font-size: 18px; margin: 5px 0; }
+    #message {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #444;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <h2>⚽ Takım Kurucu</h2>
+  <textarea id="names" placeholder="İsimleri alt alta yaz..."></textarea><br>
+  <select id="teamCount">
+    <option value="2">2 Takım</option>
+    <option value="3">3 Takım</option>
+    <option value="4">4 Takım</option>
+  </select><br>
+  <button onclick="createTeams()">Takımı Kur</button>
+  <button onclick="shuffleTeams()">Karıştır</button>
+  <button onclick="copyTeams()">Paylaş</button>
+
+  <div id="message"></div>
+  <div id="teamsContainer"></div>
+
+  <script>
+    let currentNames = [];
+    let audio;
+
+    const teamColors = ["#d1e7dd", "#f8d7da", "#fff3cd", "#cfe2ff"];
+    const messages = [
+      "Takımlar kuruldu, şimdi sahaya çıkma zamanı!",
+      "Karıştı, bakalım bu sefer kim kazanacak?",
+      "Yeni kadro hazır, taktikler değişti!",
+      "Şans faktörü devrede, iyi olan kazansın!",
+      "Bu sefer dengeli gibi duruyor...",
+      "Kaptanlar belli oldu, oyun başlasın!",
+      "Karıştırdık, şimdi daha adil!",
+      "Yeni eşleşme geldi, sürprizlere açık!",
+      "Takımlar değişti, hava değişti!",
+      "Hazır mısınız? Bu sefer farklı olacak!"
+    ];
+
+    function showRandomMessage() {
+      const msg = messages[Math.floor(Math.random() * messages.length)];
+      document.getElementById("message").innerText = msg;
+    }
+
+    function playSound() {
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+      audio = new Audio("https://github.com/Kratus23/ses-efekt-/blob/main/Montaj%20İçin%20Ses%20Efekti%20-%20Oooo%20Çok%20Kritik%20(Beyaz%20Futbol).mp3?raw=true");
+      audio.volume = 0.2;
+      audio.play();
+    }
+
+    function createTeams() {
+      const raw = document.getElementById("names").value.trim();
+      currentNames = raw.split("\n").filter(n => n.trim() !== "");
+      shuffleArray(currentNames);
+      assignTeams();
+      showRandomMessage();
+      playSound();
+    }
+
+    function shuffleTeams() {
+      shuffleArray(currentNames);
+      assignTeams();
+      showRandomMessage();
+      playSound();
+    }
+
+    function shuffleArray(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+    }
+
+    function assignTeams() {
+      const total = currentNames.length;
+      const teamCount = parseInt(document.getElementById("teamCount").value);
+      const baseSize = Math.floor(total / teamCount);
+      const remainder = total % teamCount;
+
+      let teams = [];
+      let start = 0;
+
+      for (let i = 0; i < teamCount; i++) {
+        const extra = i < remainder ? 1 : 0;
+        const end = start + baseSize + extra;
+        teams.push(currentNames.slice(start, end));
+        start = end;
+      }
+
+      const container = document.getElementById("teamsContainer");
+      container.innerHTML = "";
+
+      teams.forEach((team, i) => {
+        const div = document.createElement("div");
+        div.className = "team";
+        div.style.backgroundColor = teamColors[i % teamColors.length];
+        div.innerHTML = `<h3>Takım ${String.fromCharCode(65 + i)}</h3><ul>${team.map(n => `<li>${n}</li>`).join("")}</ul>`;
+        container.appendChild(div);
+      });
+    }
+
+    function copyTeams() {
+      const text = document.getElementById("teamsContainer").innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        alert("Takımlar kopyalandı! Paylaşmaya hazırsın.");
+      });
+    }
+  </script>
+</body>
+</html>
